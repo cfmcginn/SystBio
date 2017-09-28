@@ -7,6 +7,7 @@
 #include "TF2.h"
 #include "TStyle.h"
 #include "TArrow.h"
+#include "TMath.h"
 
 void prettyCanv(TCanvas* canv_p)
 {
@@ -73,11 +74,11 @@ int emulateCircadian()
   yDotNull_p->SetLineColor(kBlue);
   yDotNull_p->SetMarkerSize(1);
 
-  TH1F* dummyHist_p = new TH1F("dummyHist_h", ";;", 3, 0, 5);
-  dummyHist_p->SetMaximum(5);
+  TH1F* dummyHist_p = new TH1F("dummyHist_h", ";;", 3, 0, 3.5);
+  dummyHist_p->SetMaximum(3.5);
   dummyHist_p->SetMinimum(0);
 
-  TH1F* dummyHist2_p = new TH1F("dummyHist2_h", ";;", 3, 0, 2);
+  TH1F* dummyHist2_p = new TH1F("dummyHist2_h", ";;", 2, 0, 2);
   dummyHist2_p->SetMaximum(2);
   dummyHist2_p->SetMinimum(0);
 
@@ -140,23 +141,35 @@ int emulateCircadian()
   //  xDotNull2_p->DrawCopy("SAME");
   yDotNull_p->DrawCopy("SAME");
 
-  for(int i = 0; i < 5; ++i){
-    double xPos = 0.5 + i;
+  for(int i = 0; i < 70; ++i){
+    double xPos = 0.05 + i*.05;
 
-    for(int j = 0; j < 5; ++j){
-      double yPos = 0.5 + j;
+    for(int j = 0; j < 70; ++j){
+      double yPos = 0.05 + j*.05;
+      
+      double xEval = xDot1_p->Eval(xPos,yPos);
+      double yEval = yDot_p->Eval(xPos,yPos);
 
-      //      double xEval = xDot1_p->Eval(xPos,yPos);
+      double xMin = xPos - .025*TMath::Abs(xEval)/TMath::Sqrt(xEval*xEval + yEval*yEval);
+      double xMax = xPos + .025*TMath::Abs(xEval)/TMath::Sqrt(xEval*xEval + yEval*yEval);
+
+      double yMin = yPos - .025*TMath::Abs(yEval)/TMath::Sqrt(xEval*xEval + yEval*yEval);
+      double yMax = yPos + .025*TMath::Abs(yEval)/TMath::Sqrt(xEval*xEval + yEval*yEval);
+      
+      if(yEval*xEval < 0){
+	double tempY = yMin;
+	yMin = yMax;
+	yMax = tempY;
+      }
+
+      if(xPos < .5 && yPos > 3){
+	std::cout << "xPos, yPos, xEval, yEval: " << xPos << ", " << yPos << ", " << xEval << ", " << yEval << std::endl;
+      }
 
       std::string opt = ">";
-      if(xDot1_p->Eval(xPos,yPos) < 0) opt = "<";
+      if(xEval < 0) opt = "<";
 
-      arrow->DrawArrow(xPos - .2, yPos, xPos + .2, yPos, 0, opt.c_str());
-
-      opt = ">";
-      if(yDot_p->Eval(xPos,yPos) < 0) opt = "<";
-
-      arrow->DrawArrow(xPos, yPos - .2, xPos , yPos + .2, 0, opt.c_str());
+      arrow->DrawArrow(xMin, yMin, xMax, yMax, 0.005, opt.c_str());
     }
   }
 
@@ -166,21 +179,35 @@ int emulateCircadian()
   xDotNull2_p->DrawCopy("SAME");
   yDotNull_p->DrawCopy("SAME");
 
-  for(int i = 0; i < 8; ++i){
-    double xPos = 0.1 + i*.3;
+  for(int i = 0; i < 49; ++i){
+    double xPos = 0.04 + i*.04;
 
-    for(int j = 0; j < 8; ++j){
-      double yPos = 0.1 + j*.3;
+    for(int j = 0; j < 49; ++j){
+      double yPos = 0.04 + j*.04;
+      
+      double xEval = xDot2_p->Eval(xPos,yPos);
+      double yEval = yDot_p->Eval(xPos,yPos);
+
+      double xMin = xPos - .01*TMath::Abs(xEval)/TMath::Sqrt(xEval*xEval + yEval*yEval);
+      double xMax = xPos + .01*TMath::Abs(xEval)/TMath::Sqrt(xEval*xEval + yEval*yEval);
+
+      double yMin = yPos - .01*TMath::Abs(yEval)/TMath::Sqrt(xEval*xEval + yEval*yEval);
+      double yMax = yPos + .01*TMath::Abs(yEval)/TMath::Sqrt(xEval*xEval + yEval*yEval);
+      
+      if(yEval*xEval < 0){
+	double tempY = yMin;
+	yMin = yMax;
+	yMax = tempY;
+      }
+
+      if(xPos < .5 && yPos > 3){
+	std::cout << "xPos, yPos, xEval, yEval: " << xPos << ", " << yPos << ", " << xEval << ", " << yEval << std::endl;
+      }
 
       std::string opt = ">";
-      if(xDot2_p->Eval(xPos,yPos) < 0) opt = "<";
+      if(xEval < 0) opt = "<";
 
-      arrow->DrawArrow(xPos - .1, yPos, xPos + .1, yPos, 0, opt.c_str());
-
-      opt = ">";
-      if(yDot_p->Eval(xPos,yPos) < 0) opt = "<";
-
-      arrow->DrawArrow(xPos, yPos - .1, xPos , yPos + .1, 0, opt.c_str());
+      arrow->DrawArrow(xMin, yMin, xMax, yMax, 0.01, opt.c_str());
     }
   }
 
