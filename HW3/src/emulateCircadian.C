@@ -8,12 +8,14 @@
 #include "TStyle.h"
 #include "TArrow.h"
 #include "TMath.h"
+#include "TLatex.h"
 
 void prettyCanv(TCanvas* canv_p)
 {
-  canv_p->SetTopMargin(0.01);
   canv_p->SetRightMargin(0.01);
+  canv_p->SetLeftMargin(canv_p->GetLeftMargin()*1.3);
   canv_p->SetBottomMargin(canv_p->GetLeftMargin());
+  canv_p->SetTopMargin(canv_p->GetLeftMargin()/2.);
 
   return;
 }
@@ -31,8 +33,7 @@ int emulateCircadian()
 
   const double gammax = 10;
 
-
-  TFile* outFile_p = new TFile("outFile.root", "RECREATE");
+  TFile* outFile_p = new TFile("output/outFile.root", "RECREATE");
 
   TCanvas* xDotNull1Canv_p = new TCanvas("xDotNull1Canv_p", "xDotNull1Canv_p", 500, 500);
   TCanvas* xDotNull2Canv_p = new TCanvas("xDotNull2Canv_p", "xDotNull2Canv_p", 500, 500);
@@ -51,6 +52,11 @@ int emulateCircadian()
   const std::string xDotStr2 = std::to_string(gammax) + "*(" + std::to_string(vx) + " + " + std::to_string(kx) + "*(1/(1+y))*(x*x/(1+x*x)) - x)";
   const std::string yDotStr = std::to_string(ky) + "*x - y";
 
+  TLatex* label_p = new TLatex();
+  label_p->SetTextFont(43);
+  label_p->SetTextSize(14);
+  label_p->SetNDC();
+
   TF2* xDot1_p = new TF2("xDot1_p", xDotStr1.c_str(), 0, 100000, 0, 100000);
   TF2* xDot2_p = new TF2("xDot2_p", xDotStr2.c_str(), 0, 100000, 0, 100000);
   TF2* yDot_p = new TF2("yDot_p", yDotStr.c_str(), 0, 100000, 0, 100000);
@@ -66,7 +72,7 @@ int emulateCircadian()
   xDotNull2_p->SetMarkerColor(kRed);
   xDotNull2_p->SetLineColor(kRed);
   xDotNull2_p->SetMarkerSize(1);
-  xDotNull2_p->SetLineStyle(2);
+  xDotNull2_p->SetLineStyle(1);
 
   const std::string yDotNullStr = std::to_string(ky) + "*x";
   TF1* yDotNull_p = new TF1("yDotNull_p", yDotNullStr.c_str(), 0, 10000);
@@ -74,24 +80,29 @@ int emulateCircadian()
   yDotNull_p->SetLineColor(kBlue);
   yDotNull_p->SetMarkerSize(1);
 
-  TH1F* dummyHist_p = new TH1F("dummyHist_h", ";;", 3, 0, 3.5);
-  dummyHist_p->SetMaximum(3.5);
+  TH1F* dummyHist_p = new TH1F("dummyHist_h", ";X;Y", 3, 0, 3.);
+  dummyHist_p->SetMaximum(3.);
   dummyHist_p->SetMinimum(0);
+  dummyHist_p->GetXaxis()->CenterTitle();
+  dummyHist_p->GetYaxis()->CenterTitle();
 
-  TH1F* dummyHist2_p = new TH1F("dummyHist2_h", ";;", 2, 0, 2);
+  TH1F* dummyHist2_p = new TH1F("dummyHist2_h", ";X;Y", 2, 0, 2);
   dummyHist2_p->SetMaximum(2);
   dummyHist2_p->SetMinimum(0);
+  dummyHist2_p->GetXaxis()->CenterTitle();
+  dummyHist2_p->GetYaxis()->CenterTitle();
 
   xDotNull1Canv_p->cd();
   dummyHist_p->DrawCopy();
+  label_p->DrawLatex(.35, .96, "dx/dt = 0; (A) Scenario");
   xDotNull1_p->DrawCopy("SAME");
 
   TArrow* arrow = new TArrow();
 
-  for(int i = 0; i < 5; ++i){
+  for(int i = 0; i < 3; ++i){
     double xPos = 0.5 + i;
 
-    for(int j = 0; j < 5; ++j){
+    for(int j = 0; j < 3; ++j){
       double yPos = 0.5 + j;
 
       std::string opt = ">";
@@ -102,13 +113,14 @@ int emulateCircadian()
   }
 
   xDotNull2Canv_p->cd();
-  dummyHist_p->DrawCopy();
+  dummyHist2_p->DrawCopy();
+  label_p->DrawLatex(.35, .96, "dx/dt = 0; (B) Scenario");
   xDotNull2_p->DrawCopy("SAME");
 
-  for(int i = 0; i < 5; ++i){
+  for(int i = 0; i < 4; ++i){
     double xPos = 0.5 + i;
 
-    for(int j = 0; j < 5; ++j){
+    for(int j = 0; j < 4; ++j){
       double yPos = 0.5 + j;
 
       std::string opt = ">";
@@ -120,12 +132,13 @@ int emulateCircadian()
 
   yDotNullCanv_p->cd();
   dummyHist_p->DrawCopy();
+  label_p->DrawLatex(.35, .96, "dy/dt = 0; (A) and (B) Scenario");
   yDotNull_p->DrawCopy("SAME");
 
-  for(int i = 0; i < 5; ++i){
+  for(int i = 0; i < 3; ++i){
     double xPos = 0.5 + i;
 
-    for(int j = 0; j < 5; ++j){
+    for(int j = 0; j < 3; ++j){
       double yPos = 0.5 + j;
 
       std::string opt = ">";
@@ -140,12 +153,13 @@ int emulateCircadian()
   xDotNull1_p->DrawCopy("SAME");
   //  xDotNull2_p->DrawCopy("SAME");
   yDotNull_p->DrawCopy("SAME");
+  label_p->DrawLatex(.35, .96, "Arrows show dx/dt, dy/dt vector, (A) Scenario");
 
-  for(int i = 0; i < 70; ++i){
-    double xPos = 0.05 + i*.05;
+  for(int i = 0; i < 29; ++i){
+    double xPos = 0.1 + i*.1;
 
-    for(int j = 0; j < 70; ++j){
-      double yPos = 0.05 + j*.05;
+    for(int j = 0; j < 29; ++j){
+      double yPos = 0.1 + j*.1;
       
       double xEval = xDot1_p->Eval(xPos,yPos);
       double yEval = yDot_p->Eval(xPos,yPos);
@@ -169,7 +183,7 @@ int emulateCircadian()
       std::string opt = ">";
       if(xEval < 0) opt = "<";
 
-      arrow->DrawArrow(xMin, yMin, xMax, yMax, 0.005, opt.c_str());
+      arrow->DrawArrow(xMin, yMin, xMax, yMax, 0.01, opt.c_str());
     }
   }
 
@@ -178,21 +192,22 @@ int emulateCircadian()
   //  xDotNull1_p->DrawCopy("SAME");
   xDotNull2_p->DrawCopy("SAME");
   yDotNull_p->DrawCopy("SAME");
+  label_p->DrawLatex(.35, .96, "Arrows show dx/dt, dy/dt vector, (B) Scenario");
 
-  for(int i = 0; i < 49; ++i){
-    double xPos = 0.04 + i*.04;
+  for(int i = 0; i < 24; ++i){
+    double xPos = 0.08 + i*.08;
 
-    for(int j = 0; j < 49; ++j){
-      double yPos = 0.04 + j*.04;
+    for(int j = 0; j < 24; ++j){
+      double yPos = 0.08 + j*.08;
       
       double xEval = xDot2_p->Eval(xPos,yPos);
       double yEval = yDot_p->Eval(xPos,yPos);
 
-      double xMin = xPos - .01*TMath::Abs(xEval)/TMath::Sqrt(xEval*xEval + yEval*yEval);
-      double xMax = xPos + .01*TMath::Abs(xEval)/TMath::Sqrt(xEval*xEval + yEval*yEval);
+      double xMin = xPos - .02*TMath::Abs(xEval)/TMath::Sqrt(xEval*xEval + yEval*yEval);
+      double xMax = xPos + .02*TMath::Abs(xEval)/TMath::Sqrt(xEval*xEval + yEval*yEval);
 
-      double yMin = yPos - .01*TMath::Abs(yEval)/TMath::Sqrt(xEval*xEval + yEval*yEval);
-      double yMax = yPos + .01*TMath::Abs(yEval)/TMath::Sqrt(xEval*xEval + yEval*yEval);
+      double yMin = yPos - .02*TMath::Abs(yEval)/TMath::Sqrt(xEval*xEval + yEval*yEval);
+      double yMax = yPos + .02*TMath::Abs(yEval)/TMath::Sqrt(xEval*xEval + yEval*yEval);
       
       if(yEval*xEval < 0){
 	double tempY = yMin;
@@ -222,11 +237,11 @@ int emulateCircadian()
   canv2_p->Write("", TObject::kOverwrite);
 
 
-  xDotNull1Canv_p->SaveAs("xDotNull1Canv.pdf");
-  xDotNull2Canv_p->SaveAs("xDotNull2Canv.pdf");
-  yDotNullCanv_p->SaveAs("yDotNullCanv.pdf");
-  canv1_p->SaveAs("canv1.pdf");
-  canv2_p->SaveAs("canv2.pdf");
+  xDotNull1Canv_p->SaveAs("pdfDir/xDotNull1Canv.pdf");
+  xDotNull2Canv_p->SaveAs("pdfDir/xDotNull2Canv.pdf");
+  yDotNullCanv_p->SaveAs("pdfDir/yDotNullCanv.pdf");
+  canv1_p->SaveAs("pdfDir/canv1.pdf");
+  canv2_p->SaveAs("pdfDir/canv2.pdf");
 
   delete xDotNull1Canv_p;
   delete xDotNull2Canv_p;

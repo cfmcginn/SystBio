@@ -7,7 +7,7 @@
 
 int nodeEdgeModel()
 {
-  const int timeSteps = 20;
+  const int timeSteps = 15;
 
   Double_t bins[timeSteps+1];
   for(int i = 0; i < timeSteps+1; ++i){
