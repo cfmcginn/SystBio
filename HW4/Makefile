@@ -8,11 +8,19 @@ endif
 ROOT = `root-config --cflags --glibs`
 
 MKDIR_BIN = mkdir -p $(PWD)/bin
+MKDIR_PDFDIR = mkdir -p $(PWD)/pdfDir
+MKDIR_OUTPUT = mkdir -p $(PWD)/output
 
-all: mkdirBin geneDuplication
+all: mkdirBin mkdirOutput mkdirPdfdir geneDuplication
 
 mkdirBin:
 	$(MKDIR_BIN)
+
+mkdirOutput:
+	$(MKDIR_OUTPUT)
+
+mkdirPdfdir:
+	$(MKDIR_PDFDIR)
 
 geneDuplication: src/geneDuplication.C
 	$(CXX) $(CXXFLAGS) $(ROOT) -I $(PWD) -o bin/geneDuplication.exe src/geneDuplication.C
