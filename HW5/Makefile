@@ -11,7 +11,7 @@ MKDIR_BIN = mkdir -p $(PWD)/bin
 MKDIR_PDFDIR = mkdir -p $(PWD)/pdfDir
 MKDIR_OUTPUT = mkdir -p $(PWD)/output
 
-all: mkdirBin mkdirOutput mkdirPdfdir stochProteins stochBistable
+all: mkdirBin mkdirOutput mkdirPdfdir stochProteins stochBistable stochPotential stochBistableGil stochPotentialProb
 
 mkdirBin:
 	$(MKDIR_BIN)
@@ -27,6 +27,15 @@ stochProteins: src/stochProteins.C
 
 stochBistable: src/stochBistable.C
 	$(CXX) $(CXXFLAGS) $(ROOT) -I $(PWD) -o bin/stochBistable.exe src/stochBistable.C
+
+stochBistableGil: src/stochBistableGil.C
+	$(CXX) $(CXXFLAGS) $(ROOT) -I $(PWD) -o bin/stochBistableGil.exe src/stochBistableGil.C
+
+stochPotential: src/stochPotential.C
+	$(CXX) $(CXXFLAGS) $(ROOT) -I $(PWD) -o bin/stochPotential.exe src/stochPotential.C
+
+stochPotentialProb: src/stochPotentialProb.C
+	$(CXX) $(CXXFLAGS) $(ROOT) -I $(PWD) -o bin/stochPotentialProb.exe src/stochPotentialProb.C
 
 clean:
 	rm *~ || true
