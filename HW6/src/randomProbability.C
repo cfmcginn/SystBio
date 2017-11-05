@@ -74,6 +74,12 @@ int randomProbability(const int nSteps, const int nSimul)
   }
 
   int zeroVals = pathsToPosMap[0].size();
+  std::vector<int> check = pathsToPosMap[0];
+
+  for(unsigned int i =0; i < check.size(); ++i){
+    std::cout << check.at(i) << std::endl;
+  }
+
 
   std::cout << zeroVals << "/" << total << std::endl;
 
