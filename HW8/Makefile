@@ -12,7 +12,7 @@ MKDIR_BIN = mkdir -p $(PWD)/bin
 MKDIR_PDFDIR = mkdir -p $(PWD)/pdfDir
 MKDIR_OUTPUT = mkdir -p $(PWD)/output
 
-all: mkdirBin mkdirOutput mkdirPdfdir logMap logMap2
+all: mkdirBin mkdirOutput mkdirPdfdir logMap logMap2 allee
 
 mkdirBin:
 	$(MKDIR_BIN)
@@ -28,6 +28,9 @@ logMap: src/logMap.C
 
 logMap2: src/logMap2.C
 	$(CXX) $(CXXFLAGS) $(ROOT) -I $(PWD) -I $(BOOST) -o bin/logMap2.exe src/logMap2.C
+
+allee: src/allee.C
+	$(CXX) $(CXXFLAGS) $(ROOT) -I $(PWD) -I $(BOOST) -o bin/allee.exe src/allee.C
 
 clean:
 	rm *~ || true

@@ -6,6 +6,7 @@
 #include "TGraph.h"
 #include "TStyle.h"
 #include "TLine.h"
+#include "TLegend.h"
 
 #include "include/kirchnerPalette.h"
 #include "include/plotUtilities.h"
@@ -20,12 +21,21 @@ int logMap()
   const int nTime = 20;
 
   TGraph* cobWebs_p[nRParam];
+  TH1F* dummys_p[nRParam];
+
   for(int i = 0; i < nRParam; ++i){
     cobWebs_p[i] = new TGraph();
     cobWebs_p[i]->SetMarkerColor(col.getColor(i));
     cobWebs_p[i]->SetMarkerStyle(20);
     cobWebs_p[i]->SetLineColor(col.getColor(i));
     cobWebs_p[i]->SetMarkerSize(.6);
+
+    dummys_p[i] = new TH1F(("dummys_" + std::to_string(int(rParams[i]*10)) + "_h").c_str(), ";;", 10, 0, 1);
+
+    dummys_p[i]->SetMarkerColor(col.getColor(i));
+    dummys_p[i]->SetMarkerStyle(20);
+    dummys_p[i]->SetLineColor(col.getColor(i));
+    dummys_p[i]->SetMarkerSize(.6);
   }
 
   double prevXVal[nRParam] = {x0,x0,x0};
@@ -68,6 +78,13 @@ int logMap()
 
   delete dummy_p;
 
+  TLegend* leg_p = new TLegend(0.2, 0.65, 0.5, 0.95);
+  leg_p->SetBorderSize(0);
+  leg_p->SetFillColor(0);
+  leg_p->SetFillStyle(0);
+  leg_p->SetTextFont(43);
+  leg_p->SetTextSize(18);
+
   TLine* line_p = new TLine();
 
   for(int i = 0; i < nRParam; ++i){
@@ -82,11 +99,17 @@ int logMap()
 
       line_p->DrawLine(x1,y1,x2,y2);
     }
+
+    leg_p->AddEntry(dummys_p[i], ("r=" + prettyString(rParams[i], 1, false)).c_str(), "P L");
   }
+
+  leg_p->Draw("SAME");
+
   delete line_p;
 
   canv_p->SaveAs("pdfDir/cobWeb.pdf");
 
+  delete leg_p;
   delete canv_p;
 
   for(int i = 0; i < nRParam; ++i){
