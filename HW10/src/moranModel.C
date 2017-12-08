@@ -24,7 +24,9 @@ int moranModel(const unsigned int nSim = 500, const int nPopSize=10, const doubl
 
   TFile* outFile_p = new TFile(("output/moranModel_" + std::to_string(date->GetDate()) + ".root").c_str(), "UPDATE");
   TH1F* sGen_p = new TH1F(("sGen_nSim" + std::to_string(nSim) + "_NPop" + std::to_string(nPopSize) + "_mutRate" + prettyString(mutRate, 6, true) + "_h").c_str(), ";s_{Gen.};Counts", 100, 0, s0*10.);
-  TH1F* sGen_Win_p = new TH1F(("sGen_Win_nSim " + std::to_string(nSim) + " _NPop" + std::to_string(nPopSize) + "_mutRate" + prettyString(mutRate, 6, true) + "_h").c_str(), ";s_{Gen. Win};Counts", 100, 0, s0*10.);
+  TH1F* sGen_Win_p = new TH1F(("sGen_Win_nSim" + std::to_string(nSim) + "_NPop" + std::to_string(nPopSize) + "_mutRate" + prettyString(mutRate, 6, true) + "_h").c_str(), ";s_{Gen. Win};Counts", 100, 0, s0*10.);
+  sGen_Win_p->Print();
+
   sGen_p->Sumw2();
   sGen_Win_p->Sumw2();
 
@@ -116,26 +118,29 @@ int moranModel(const unsigned int nSim = 500, const int nPopSize=10, const doubl
 	}
 	if(isFound) break;
       }
-					       
+
       pop.at(deathPos) -= 1;
-      pop.at(repPos) += 1;
 
-      pop1.push_back(pop.at(0));
-      pop2.push_back(pop.at(1));
-
-      double draw3 = randGen_p->Uniform(0,1);
-
-      if(doGlobalDebug) std::cout << __FILE__ << ", " << __LINE__ << std::endl;
-
-      if(draw3 < mutRate && pop.at(0) != 0){
-	pop.at(0) -= 1;
-	pop.push_back(1);
-	double sGenNew = randGen_p->Exp(s0);
-	sGen_p->Fill(sGenNew);
-	relFit.push_back(1.+sGenNew);
+      if(repPos != 0) pop.at(repPos) += 1;
+      else{
+	double draw3 = randGen_p->Uniform(0,1);
+	
+	if(doGlobalDebug) std::cout << __FILE__ << ", " << __LINE__ << std::endl;
+	
+	if(draw3 < mutRate && pop.at(0) != 0){
+	  //	  pop.at(0) -= 1;
+	  pop.push_back(1);
+	  double sGenNew = randGen_p->Exp(s0);
+	  sGen_p->Fill(sGenNew);
+	  relFit.push_back(1.+sGenNew);
+	}
+	else pop.at(repPos) += 1;
       }
 
       if(doGlobalDebug) std::cout << __FILE__ << ", " << __LINE__ << std::endl;
+
+      pop1.push_back(pop.at(0));
+      pop2.push_back(pop.at(1));
 
       pops = pop.at(0);
       for(unsigned int jI = 1; jI < pop.size(); ++jI){
@@ -255,12 +260,13 @@ int main(int argc, char* argv[])
 {
   if(argc != 1 && argc != 2 && argc != 3 && argc != 4){
     std::cout << "Usage: ./moranModel.exe <nSim-optional> <nPopSize-optional> <mutRate-optional>" << std::endl;
+    return 1;
   }
 
   int retVal = 0;
   if(argc == 1) retVal += moranModel();
   else if(argc == 2) retVal += moranModel(std::stoi(argv[1]));
   else if(argc == 3) retVal += moranModel(std::stoi(argv[1]), std::stoi(argv[2]));
-  else if(argc == 4) retVal += moranModel(std::stoi(argv[1]), std::stoi(argv[2]), std::stoi(argv[3]));
+  else if(argc == 4) retVal += moranModel(std::stoi(argv[1]), std::stoi(argv[2]), std::stof(argv[3]));
   return retVal;
 }

@@ -13,7 +13,7 @@ MKDIR_PDFDIR = mkdir -p $(PWD)/pdfDir
 MKDIR_GIFDIR = mkdir -p $(PWD)/gifDir
 MKDIR_OUTPUT = mkdir -p $(PWD)/output
 
-all: mkdirBin mkdirOutput mkdirPdfdir mkdirGifdir moranModel moranModel_Path betHedging
+all: mkdirBin mkdirOutput mkdirPdfdir mkdirGifdir moranModel moranModel_Path betHedging plotMoranModel
 
 mkdirBin:
 	$(MKDIR_BIN)
@@ -35,6 +35,9 @@ moranModel_Path: src/moranModel_Path.C
 
 betHedging: src/betHedging.C
 	$(CXX) $(CXXFLAGS) $(ROOT) -I $(PWD) -I $(BOOST) -o bin/betHedging.exe src/betHedging.C
+
+plotMoranModel: src/plotMoranModel.C
+	$(CXX) $(CXXFLAGS) $(ROOT) -I $(PWD) -I $(BOOST) -o bin/plotMoranModel.exe src/plotMoranModel.C
 
 
 clean:
