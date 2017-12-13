@@ -21,10 +21,21 @@ std::string prettyString(const double inVal, const int prec, const bool doDot)
 
 int moranModel_Path_NOROOT(const double s0A, const double s0B, const double s0AB, const unsigned int nSim = 500, const int nPopSize=10, const double overrideMuteRate = -1)
 {
+  std::time_t tStart = time(0);
+  struct std::tm *now = std::localtime(&tStart);
+  
+  int startYear = now->tm_year;
+  int startMonth = now->tm_mon;
+  int startDay = now->tm_mday;
+  int startHour = now->tm_hour;
+  int startMinute = now->tm_min;
+  int startSecond = now->tm_sec;
+
+
   boost::random::mt19937 gen(std::time(0));
   boost::random::uniform_real_distribution<> dist(0, 1);
-  time_t now = time(0);
-  tm *ltm = localtime(&now);
+  time_t now2 = std::time(0);
+  tm *ltm = std::localtime(&now2);
 
   std::string fullDateStr = std::to_string(ltm->tm_year + 1900);
   if(ltm->tm_mon + 1 < 10) fullDateStr = fullDateStr + "0";
@@ -265,6 +276,22 @@ int moranModel_Path_NOROOT(const double s0A, const double s0B, const double s0AB
 
     fileA.close();
   }
+
+  std::time_t tEnd = std::time(0);
+  struct std::tm *later = std::localtime(&tEnd);
+  
+  int endYear = later->tm_year;
+  int endMonth = later->tm_mon;
+  int endDay = later->tm_mday;
+  int endHour = later->tm_hour;
+  int endMinute = later->tm_min;
+  int endSecond = later->tm_sec;
+
+  std::string startStr = std::to_string(startYear) + "." + std::to_string(startMonth) + "." + std::to_string(startDay) + "." + std::to_string(startHour) + "." + std::to_string(startMinute) + "." + std::to_string(startSecond);
+  std::string endStr = std::to_string(endYear) + "." + std::to_string(endMonth) + "." + std::to_string(endDay) + "." + std::to_string(endHour) + "." + std::to_string(endMinute) + "." + std::to_string(endSecond);
+																										    
+  std::cout << "Start: " << startStr << std::endl;
+  std::cout << "End: " << endStr << std::endl;
 
   return 0;
 }
