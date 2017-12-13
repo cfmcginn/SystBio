@@ -273,7 +273,7 @@ int moranModel_Path_NOROOT(const double s0A, const double s0B, const double s0AB
 int main(int argc, char* argv[])
 {
   if(argc != 4 && argc != 5 && argc != 6 && argc != 7){
-    std::cout << "Usage: ./moranModel_Path_NOROOT.exe <s0A> <s0B> <s0AB> <nSim-optional> <nPopSize-optional>" << std::endl;
+    std::cout << "Usage: ./moranModel_Path_NOROOT.exe <s0A> <s0B> <s0AB> <nSim-optional> <nPopSize-optional> <muteRate-optional>" << std::endl;
   }
 
   int retVal = 0;
